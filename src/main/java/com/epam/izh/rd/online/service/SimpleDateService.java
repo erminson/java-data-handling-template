@@ -14,7 +14,11 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String parseDate(LocalDate localDate) {
-        return null;
+        int day = localDate.getDayOfMonth();
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+
+        return String.format("%02d-%02d-%04d", day, month, year);
     }
 
     /**
