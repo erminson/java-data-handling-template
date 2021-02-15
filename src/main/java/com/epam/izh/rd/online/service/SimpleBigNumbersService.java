@@ -28,6 +28,32 @@ public class SimpleBigNumbersService implements BigNumbersService {
      */
     @Override
     public BigInteger getPrimaryNumber(int range) {
-        return null;
+        int count = 0;
+        int primaryNumber = 2;
+
+        while (count != range) {
+            primaryNumber += 1;
+            if (isPrimary(primaryNumber)) {
+                count++;
+            }
+        }
+
+        return new BigInteger(String.valueOf(primaryNumber));
+    }
+
+    boolean isPrimary(int number) throws IllegalArgumentException {
+        if (number < 2) {
+            throw  new IllegalArgumentException("Number must be more than 2");
+        }
+
+        boolean result = true;
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                result = false;
+                break;
+            }
+        }
+
+        return result;
     }
 }
