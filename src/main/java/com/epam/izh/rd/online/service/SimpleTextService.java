@@ -70,6 +70,13 @@ public class SimpleTextService implements TextService {
      */
     @Override
     public boolean isPalindrome(String string) {
-        return false; //TODO
+        if (string.length() == 0) {
+            return false;
+        }
+
+        String trimmedString = string.trim().toLowerCase().replaceAll(" ", "");
+        String reversedString = (new StringBuilder(trimmedString)).reverse().toString();
+
+        return reversedString.equals(trimmedString);
     }
 }
