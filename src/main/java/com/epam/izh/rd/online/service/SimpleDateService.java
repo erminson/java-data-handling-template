@@ -1,8 +1,6 @@
 package com.epam.izh.rd.online.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class SimpleDateService implements DateService {
@@ -79,8 +77,17 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getSecondsInYear(int year) {
-        return 0;
+        ZoneId zoneId = ZoneId.systemDefault();
+        Year y = Year.of(year);
+
+        LocalDate start = y.atDay(1) ;
+        LocalDate stop = start.plusYears(1);
+
+        ZonedDateTime startZDT = start.atStartOfDay(zoneId) ;
+        ZonedDateTime stopZDT = stop.atStartOfDay(zoneId) ;
+
+        Duration duration = Duration.between(startZDT, stopZDT) ;
+
+        return duration.getSeconds();
     }
-
-
 }
