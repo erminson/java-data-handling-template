@@ -1,5 +1,7 @@
 package com.epam.izh.rd.online.service;
 
+import java.util.regex.Pattern;
+
 public class SimpleTextService implements TextService {
 
     /**
@@ -24,7 +26,7 @@ public class SimpleTextService implements TextService {
      */
     @Override
     public boolean isQuestionString(String text) {
-        return false; //TODO
+        return Pattern.matches("^.*\\?", text);
     }
 
     /**
