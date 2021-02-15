@@ -2,6 +2,7 @@ package com.epam.izh.rd.online.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 public class SimpleDateService implements DateService {
@@ -52,7 +53,23 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getNextLeapYear() {
-        return 0;
+        LocalDate now = LocalDate.now();
+        int nextLeapYear = now.getYear() + 1;
+
+        while (!isLeap(nextLeapYear)) {
+            nextLeapYear++;
+        }
+
+        return nextLeapYear;
+    }
+
+    boolean isLeap(int year) {
+        return ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
+    }
+
+    boolean isLeap2(int year) {
+        YearMonth ym = YearMonth.of(year, 2);
+        return ym.lengthOfMonth() == 29;
     }
 
     /**
