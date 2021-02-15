@@ -17,7 +17,7 @@ public class SimpleRegExpService implements RegExpService {
 
     @Override
     public String maskSensitiveData() {
-        String content = readFileByName();
+        String content = readFile();
 
         Pattern pattern = Pattern.compile("(\\d{4} \\d{4} \\d{4} \\d{4})");
         Matcher matcher = pattern.matcher(content);
@@ -33,7 +33,7 @@ public class SimpleRegExpService implements RegExpService {
         return maskedString;
     }
 
-    String readFileByName() {
+    String readFile() {
         File file = new File(SimpleRegExpService.FILE_NAME);
 
         StringBuilder sb = new StringBuilder();
@@ -84,6 +84,9 @@ public class SimpleRegExpService implements RegExpService {
      */
     @Override
     public String replacePlaceholders(double paymentAmount, double balance) {
-        return null;
+        String content = readFile();
+        content = content.replaceAll("\\$\\{payment_amount}", String.format("%.0f", paymentAmount));
+        content = content.replaceAll("\\$\\{balance}", String.format("%.0f", balance));
+        return content;
     }
 }
