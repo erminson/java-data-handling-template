@@ -1,6 +1,8 @@
 package com.epam.izh.rd.online.repository;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class SimpleFileRepository implements FileRepository {
 
@@ -65,7 +67,79 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public void copyTXTFiles(String from, String to) {
-        return;
+        File inputFile = new File(from);
+        File outputFile = new File(to);
+
+        if (!inputFile.exists()) {
+            return;
+        }
+
+        if (inputFile.isFile()) {
+            try {
+                String content = readFile(from);
+                writeContentToFile(to, content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (inputFile.isDirectory()) {
+            File[] files = Arrays.stream(inputFile.listFiles())
+                    .filter(file -> getExtension(file).equals("txt"))
+                    .toArray(File[]::new);
+
+            for (File file : files) {
+                try {
+                    String content = readFile(file.getPath());
+                    String path = Paths.get(outputFile.getPath(), file.getName()).toString();
+                    writeContentToFile(path, content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    String getExtension(File file) {
+        String fileName = file.getName();
+        int index = fileName.lastIndexOf('.');
+        if (index == -1) return "";
+        return fileName.substring(index + 1);
+    }
+
+    String readFile(String path) throws IOException {
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new FileNotFoundException(String.format("File: %s not found", path));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
+        ) {
+            String buffer;
+            while ((buffer = bufferedReader.readLine()) != null) {
+                sb.append(buffer);
+                sb.append('\n');
+            }
+        }
+
+        return sb.toString();
+    }
+
+    void writeContentToFile(String path, String content) throws IOException {
+        File file = new File(path);
+        File parent = new File(file.getParent());
+        if (!parent.exists()) {
+            parent.mkdirs();
+        }
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+             BufferedWriter writer = new BufferedWriter(outputStreamWriter)) {
+            writer.write(content);
+        }
     }
 
     /**
