@@ -1,7 +1,6 @@
 package com.epam.izh.rd.online.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class SimpleDateService implements DateService {
@@ -14,7 +13,11 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String parseDate(LocalDate localDate) {
-        return null;
+        int day = localDate.getDayOfMonth();
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+
+        return String.format("%02d-%02d-%04d", day, month, year);
     }
 
     /**
@@ -25,7 +28,8 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public LocalDateTime parseString(String string) {
-        return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(string, formatter);
     }
 
     /**
@@ -37,7 +41,7 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public String convertToCustomFormat(LocalDate localDate, DateTimeFormatter formatter) {
-        return null;
+        return localDate.format(formatter);
     }
 
     /**
@@ -47,7 +51,23 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getNextLeapYear() {
-        return 0;
+        LocalDate now = LocalDate.now();
+        int nextLeapYear = now.getYear() + 1;
+
+        while (!isLeap(nextLeapYear)) {
+            nextLeapYear++;
+        }
+
+        return nextLeapYear;
+    }
+
+    boolean isLeap(int year) {
+        return ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
+    }
+
+    boolean isLeap2(int year) {
+        YearMonth ym = YearMonth.of(year, 2);
+        return ym.lengthOfMonth() == 29;
     }
 
     /**
@@ -57,8 +77,17 @@ public class SimpleDateService implements DateService {
      */
     @Override
     public long getSecondsInYear(int year) {
-        return 0;
+        ZoneId zoneId = ZoneId.systemDefault();
+        Year y = Year.of(year);
+
+        LocalDate start = y.atDay(1) ;
+        LocalDate stop = start.plusYears(1);
+
+        ZonedDateTime startZDT = start.atStartOfDay(zoneId) ;
+        ZonedDateTime stopZDT = stop.atStartOfDay(zoneId) ;
+
+        Duration duration = Duration.between(startZDT, stopZDT) ;
+
+        return duration.getSeconds();
     }
-
-
 }
