@@ -1,6 +1,7 @@
 package com.epam.izh.rd.online.repository;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
@@ -131,9 +132,7 @@ public class SimpleFileRepository implements FileRepository {
     void writeContentToFile(String path, String content) throws IOException {
         File file = new File(path);
         File parent = new File(file.getParent());
-        if (!parent.exists()) {
-            parent.mkdirs();
-        }
+        if (!parent.exists()) parent.mkdirs();
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
@@ -151,6 +150,20 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public boolean createFile(String path, String name) {
+        Path dirPath = Paths.get("target", "classes", path);
+        File dir = new File(dirPath.toString());
+        if (!dir.exists()) dir.mkdirs();
+
+        Path filePath = Paths.get(dir.getPath(), name);
+        File file = new File(filePath.toString());
+        if (file.exists())  return false;
+
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
