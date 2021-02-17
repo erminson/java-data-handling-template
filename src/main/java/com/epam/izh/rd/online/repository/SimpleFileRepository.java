@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class SimpleFileRepository implements FileRepository {
 
@@ -84,21 +85,21 @@ public class SimpleFileRepository implements FileRepository {
             }
         }
 
-        if (inputFile.isDirectory()) {
-            File[] files = Arrays.stream(inputFile.listFiles())
-                    .filter(file -> getExtension(file).equals("txt"))
-                    .toArray(File[]::new);
-
-            for (File file : files) {
-                try {
-                    String content = readFile(file.getPath());
-                    String path = Paths.get(outputFile.getPath(), file.getName()).toString();
-                    writeContentToFile(path, content);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        if (inputFile.isDirectory()) {
+//            File[] files = Arrays.stream(inputFile.listFiles())
+//                    .filter(file -> getExtension(file).equals("txt"))
+//                    .toArray(File[]::new);
+//
+//            for (File file : files) {
+//                try {
+//                    String content = readFile(file.getPath());
+//                    String path = Paths.get(outputFile.getPath(), file.getName()).toString();
+//                    writeContentToFile(path, content);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 
     String getExtension(File file) {
@@ -115,14 +116,16 @@ public class SimpleFileRepository implements FileRepository {
         }
 
         StringBuilder sb = new StringBuilder();
-        try (FileInputStream fileInputStream = new FileInputStream(file);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
+        try (
+                FileInputStream fileInputStream = new FileInputStream(file);
+                Scanner scanner = new Scanner(fileInputStream)
         ) {
-            String buffer;
-            while ((buffer = bufferedReader.readLine()) != null) {
-                sb.append(buffer);
-                sb.append('\n');
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                sb.append(line);
+                if (scanner.hasNextLine()) {
+                    sb.append('\n');
+                }
             }
         }
 
@@ -175,6 +178,16 @@ public class SimpleFileRepository implements FileRepository {
      */
     @Override
     public String readFileFromResources(String fileName) {
-        return null;
+        Path filePath = Paths.get("src", "main", "resources", fileName);
+        File file = new File(filePath.toString());
+
+        String content = null;
+        try {
+            content = readFile(file.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return content;
     }
 }
